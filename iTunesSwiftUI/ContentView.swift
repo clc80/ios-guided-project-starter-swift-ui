@@ -19,7 +19,7 @@ struct ContentView: View {
     // A state is the source of truth.
     // If it changes, the whole view will be redrawn
     @State var artistName: String = ""
-    
+    @State var artistGenre: String = ""
     var body: some View {
         VStack() {
             
@@ -32,7 +32,7 @@ struct ContentView: View {
             //TextField("Search for Artist", text: $artistName)
             
             // We can now do the same thing with our own SearchView
-            SearchView(artistNameBinding: $artistName)
+            SearchView(artistNameBinding: $artistName, artistGenreBinding: $artistGenre)
             
             Text(artistName)
                 .font(.largeTitle) // Modify the text ( -> a new text with the modifications)
@@ -45,7 +45,7 @@ struct ContentView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 
-                Text("Artist Genre placeholder")
+                Text(artistGenre)
                     .font(.subheadline)
             }
             

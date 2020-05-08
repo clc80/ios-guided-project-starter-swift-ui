@@ -13,10 +13,12 @@ final class SearchView : NSObject, UIViewRepresentable {
     // Two-way street between two variables
     // Bindidng itself is just a wrapper around 'artistName: String'
     @Binding var artistName: String
+    @Binding var artistGenre: String
     
-    init(artistNameBinding: Binding<String>) {
+    init(artistNameBinding: Binding<String>, artistGenreBinding: Binding<String>) {
         // In order to assign a binding to our variable
         _artistName = artistNameBinding
+        _artistGenre = artistGenreBinding
     }
     
     // Tell the compiler what view we'll be using while being UIViewRepresentable
@@ -47,15 +49,22 @@ extension SearchView : UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
         // The user typed _something_ and then pressed return
-        artistName = searchBar.text!
+        //artistName = searchBar.text!
         
-        iTunesAPI.searchArtists(for: artistName) { (result) in
+        // Fetch the user's input and send it to iTunes
+        iTunesAPI.searchArtists(for: searchBar.text!) { (result) in
+            
+            // When the itunes server responds, we either get an array of artists or an error.
             switch result {
                 
             case .success(let artists):
+                // If we got an array of artists, make sure there is at least one artist.
                 guard let firstArtist = artists.first else { return }
-                // Update the string with the name of the first artist that is returned
+                // Update the string with the name of the first artist that is returned, which triggers its own binding
                 self.artistName = firstArtist.artistName
+                
+                //Update the genre
+                self.artistGenre = firstArtist.primaryGenreName
                 
             case .failure(let error):
                 print(error)
