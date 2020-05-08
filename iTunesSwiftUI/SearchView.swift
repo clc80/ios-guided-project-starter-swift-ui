@@ -10,6 +10,15 @@ import Foundation
 import SwiftUI
 
 final class SearchView : NSObject, UIViewRepresentable {
+    // Two-way street between two variables
+    // Bindidng itself is just a wrapper around 'artistName: String'
+    @Binding var artistName: String
+    
+    init(artistNameBinding: Binding<String>) {
+        // In order to assign a binding to our variable
+        _artistName = artistNameBinding
+    }
+    
     // Tell the compiler what view we'll be using while being UIViewRepresentable
     // Generics via AssociatedType
     typealias UIViewType = UISearchBar
@@ -25,6 +34,7 @@ final class SearchView : NSObject, UIViewRepresentable {
     
     // Update it every single time that SwiftUI updates it.
     func updateUIView(_ uiView: UISearchBar, context: Context) {
+        uiView.delegate = self
     }
     
 }
@@ -35,6 +45,22 @@ final class SearchView : NSObject, UIViewRepresentable {
 // 3. Inherit from NSObject
 extension SearchView : UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        // The user typed _something_ and then pressed return
+        artistName = searchBar.text!
+        
+        iTunesAPI.searchArtists(for: artistName) { (result) in
+            switch result {
+                
+            case .success(let artists):
+                guard let firstArtist = artists.first else { return }
+                // Update the string with the name of the first artist that is returned
+                self.artistName = firstArtist.artistName
+                
+            case .failure(let error):
+                print(error)
+            }
+        }
         searchBar.endEditing(true)
     }
     

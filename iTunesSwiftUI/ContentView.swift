@@ -16,6 +16,8 @@ import SwiftUI
 
 // Struct that holsa our view
 struct ContentView: View {
+    // A state is the source of truth.
+    // If it changes, the whole view will be redrawn
     @State var artistName: String = ""
     
     var body: some View {
@@ -25,10 +27,12 @@ struct ContentView: View {
                 .font(.subheadline)
             
             // Textfield is expecting a binding. A binding will help SwiftUI know that it needs to update one of our own custom variables. In order for us to have a custom variable like that, we need to use @state to wrap it.
+            // $ -> Getter for the undelying binding
+            
             //TextField("Search for Artist", text: $artistName)
             
             // We can now do the same thing with our own SearchView
-            SearchView()
+            SearchView(artistNameBinding: $artistName)
             
             Text(artistName)
                 .font(.largeTitle) // Modify the text ( -> a new text with the modifications)
